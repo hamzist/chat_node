@@ -7,7 +7,6 @@ import io.socket.SocketIOException;
 
 import java.net.MalformedURLException;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,7 +46,7 @@ public class Chat_room extends Activity implements OnClickListener {
         
         // Connection to the socket
         try {
-			socket = new SocketIO("http://192.168.2.15:16558");
+			socket = new SocketIO("http://192.168.2.22:5000");
 		}
         catch (MalformedURLException ex) {
         	this.stopDialog();
@@ -123,6 +122,7 @@ public class Chat_room extends Activity implements OnClickListener {
             @Override
             public void onConnect() {
                 //Toast.makeText(Chat_room.this, "Connection established", Toast.LENGTH_LONG).show();
+            	Chat_room.this.socket.send("setPseudo");
             	new Thread() {
                     public void run() {
                         runOnUiThread(new Runnable() {
@@ -134,7 +134,7 @@ public class Chat_room extends Activity implements OnClickListener {
                     }
                 }.start();
             }
-
+            
             @Override
             public void on(final String event, IOAcknowledge ack, final Object... args) {
             	new Thread() {
@@ -192,7 +192,14 @@ public class Chat_room extends Activity implements OnClickListener {
 		}
 		
 		// Sending data
-		JSONObject obj = new JSONObject();
+		if(!this.socket.isConnected()) {
+			Toast.makeText(this, "You are not connected", Toast.LENGTH_SHORT).show();
+		}
+		socket.send("Hello Server!");
+		//this.socket.emit("", "");
+		
+		
+		/*JSONObject obj = new JSONObject();
 		try {
 			obj.put("message", "ssss");
 		}
@@ -202,7 +209,7 @@ public class Chat_room extends Activity implements OnClickListener {
 		socket.emit("message", obj);
 		//socket.emit("message", this.newMsg.getText().toString());
 		this.messages.setText(this.messages.getText().toString() + "\n\n" + this.newMsg.getText().toString());
-		this.newMsg.setText("");
+		this.newMsg.setText("");*/
 	}
 	
 	// Show the Progress Dialog
